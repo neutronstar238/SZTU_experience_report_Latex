@@ -1,0 +1,458 @@
+% !TeX program = xelatex
+\documentclass[UTF8,a4paper,zihao=-4]{ctexart}
+
+\usepackage{geometry}
+\geometry{
+  a4paper,
+  top=2.54cm,
+  bottom=2.54cm,
+  left=3.175cm,
+  right=3.175cm,
+  headheight=12pt,
+  headsep=0pt,
+  footskip=1.12cm
+}
+
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{eso-pic}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{caption}
+\usepackage{tocloft}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{indentfirst}
+
+% Font mapping from the source Word document:
+% body: SimSun/宋体 12 pt; headings: SimHei/黑体; cover metadata: SimSun;
+% inner title: Microsoft YaHei/微软雅黑 26 pt; author table: FangSong/仿宋 16 pt.
+\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{\setmainfont{TeX Gyre Termes}}
+\IfFontExistsTF{SimSun}{\setCJKmainfont[AutoFakeBold=2.8]{SimSun}}{\setCJKmainfont{FandolSong-Regular}}
+\IfFontExistsTF{SimSun}{\newCJKfontfamily\sztusong[AutoFakeBold=2.8]{SimSun}}{\newCJKfontfamily\sztusong{FandolSong-Regular}}
+\IfFontExistsTF{SimHei}{\newCJKfontfamily\sztuheiti[AutoFakeBold=1.6]{SimHei}}{\newCJKfontfamily\sztuheiti{FandolHei-Regular}}
+\IfFontExistsTF{FangSong}{\newCJKfontfamily\sztufangsong[AutoFakeBold=1.6]{FangSong}}{\newCJKfontfamily\sztufangsong{FandolFang-Regular}}
+\IfFontExistsTF{Microsoft YaHei}{\newCJKfontfamily\sztumsyh[AutoFakeBold=1.4]{Microsoft YaHei}}{\newCJKfontfamily\sztumsyh{FandolHei-Regular}}
+
+% =========================
+% Fill-in fields
+% =========================
+\newif\ifSZTUBlank
+\ifdefined\SZTUPreview
+  \SZTUBlankfalse
+\else
+  \SZTUBlanktrue
+\fi
+\newcommand{\SZTUValue}[1]{\ifSZTUBlank\phantom{#1}\else #1\fi}
+\newcommand{\SZTUPreviewOr}[2]{\ifSZTUBlank #2\else #1\fi}
+
+\ifdefined\SZTUPreview
+  \InputIfFileExists{SZTU_experience_report_preview_data.tex}{}{}
+\fi
+
+\providecommand{\CourseCode}{\SZTUValue{课程编号}}
+\providecommand{\CourseName}{\SZTUValue{课程名称}}
+\providecommand{\ReportTitle}{\SZTUValue{课程论文题目}}
+\providecommand{\ClassName}{\SZTUValue{班级名称}}
+\providecommand{\StudentName}{\SZTUValue{学生姓名}}
+\providecommand{\StudentID}{\SZTUValue{学生学号}}
+\providecommand{\TeacherName}{\SZTUValue{教师姓名}}
+\providecommand{\CoverDate}{\SZTUValue{填写日期}}
+\providecommand{\AuthorSchool}{\SZTUValue{学校名称}}
+\providecommand{\InnerDate}{\SZTUValue{填写日期}}
+\providecommand{\Keywords}{\SZTUValue{关键词一\quad 关键词二\quad 关键词三}}
+\providecommand{\PreviewAbstractText}{这里填写摘要。}
+\providecommand{\PreviewAcknowledgementsText}{这里填写致谢。}
+\providecommand{\PreviewReferenceText}{[1]\quad 这里填写参考文献条目。}
+\providecommand{\PreviewSectionOne}{一级标题}
+\providecommand{\PreviewSectionTwo}{一级标题}
+\providecommand{\PreviewSectionThree}{一级标题}
+\providecommand{\PreviewSectionFour}{结论}
+\providecommand{\PreviewSubsectionOneOne}{二级标题}
+\providecommand{\PreviewSubsectionOneTwo}{二级标题}
+\providecommand{\PreviewSubsectionTwoOne}{二级标题}
+\providecommand{\PreviewSubsectionTwoTwo}{二级标题}
+\providecommand{\PreviewSubsectionTwoThree}{二级标题}
+\providecommand{\PreviewSubsectionThreeOne}{二级标题}
+\providecommand{\PreviewSubsectionThreeTwo}{二级标题}
+\providecommand{\PreviewSubsectionThreeThree}{二级标题}
+\providecommand{\PreviewSubsectionThreeFour}{二级标题}
+\providecommand{\PreviewSubsectionThreeFive}{二级标题}
+\providecommand{\PreviewSubsubsectionTwoTwoOne}{三级标题}
+\providecommand{\PreviewSubsubsectionTwoTwoTwo}{三级标题}
+\providecommand{\PreviewSubsubsectionTwoThreeOne}{三级标题}
+\providecommand{\PreviewSubsubsectionTwoThreeTwo}{三级标题}
+
+% =========================
+% Page number and report frame
+% =========================
+\pagestyle{plain}
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyfoot[R]{\sztusong\fontsize{10.5pt}{12pt}\selectfont\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}%
+}
+
+\newif\ifSZTUFrame
+\SZTUFramefalse
+\AddToShipoutPictureBG{%
+  \ifSZTUFrame
+    \begin{tikzpicture}[remember picture,overlay]
+      \draw[line width=0.4pt]
+        ([xshift=3.175cm,yshift=-2.54cm]current page.north west)
+        rectangle
+        ([xshift=-3.175cm,yshift=2.54cm]current page.south east);
+    \end{tikzpicture}%
+  \fi
+}
+
+\newenvironment{framedcontent}{%
+  \begin{list}{}{%
+    \leftmargin=0.95cm%
+    \rightmargin=0.45cm%
+    \topsep=0pt%
+    \partopsep=0pt%
+    \parsep=0pt%
+  }%
+  \item\relax
+}{%
+  \end{list}
+}
+
+% =========================
+% Source document typography
+% =========================
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+\linespread{1.5}
+\AtBeginDocument{\sztusong\fontsize{12pt}{18pt}\selectfont}
+
+\ctexset{
+  section = {
+    name = {第,章},
+    number = \chinese{section},
+    aftername = \quad,
+    format = \sztuheiti\fontsize{15pt}{18pt}\selectfont,
+    beforeskip = 16pt,
+    afterskip = 12pt,
+    indent = 0.00cm
+  },
+  subsection = {
+    format = \sztuheiti\fontsize{15pt}{18pt}\selectfont,
+    beforeskip = 14pt,
+    afterskip = 10pt,
+    indent = 0.60cm
+  },
+  subsubsection = {
+    format = \sztuheiti\fontsize{12pt}{16pt}\selectfont,
+    beforeskip = 12pt,
+    afterskip = 6pt,
+    indent = 0.60cm
+  }
+}
+
+\renewcommand{\contentsname}{目录}
+\renewcommand{\listfigurename}{表目录}
+\renewcommand{\figurename}{图表}
+\captionsetup[figure]{
+  font={small},
+  labelfont={},
+  labelsep=space,
+  justification=centering,
+  singlelinecheck=true
+}
+\makeatletter
+\newcommand{\SZTUPrintTocBody}{\@starttoc{toc}}
+\newcommand{\SZTUPrintLofBody}{\@starttoc{lof}}
+\makeatother
+\renewcommand{\cfttoctitlefont}{}
+\renewcommand{\cftaftertoctitle}{}
+\renewcommand{\cftloftitlefont}{}
+\renewcommand{\cftafterloftitle}{}
+\renewcommand{\cftdotsep}{1.2}
+\renewcommand{\cftsecfont}{\sztusong\fontsize{12pt}{15pt}\selectfont}
+\renewcommand{\cftsecpagefont}{\sztusong\fontsize{12pt}{15pt}\selectfont}
+\renewcommand{\cftsubsecfont}{\sztusong\fontsize{12pt}{15pt}\selectfont}
+\renewcommand{\cftsubsecpagefont}{\sztusong\fontsize{12pt}{15pt}\selectfont}
+\renewcommand{\cftsubsubsecfont}{\sztusong\fontsize{12pt}{15pt}\selectfont}
+\renewcommand{\cftsubsubsecpagefont}{\sztusong\fontsize{12pt}{15pt}\selectfont}
+\renewcommand{\cftfigfont}{\sztusong\fontsize{12pt}{15pt}\selectfont}
+\renewcommand{\cftfigpagefont}{\sztusong\fontsize{12pt}{15pt}\selectfont}
+\setlength{\cftbeforesecskip}{1pt}
+\setlength{\cftbeforesubsecskip}{0pt}
+\renewcommand{\cftfigpresnum}{图表~}
+\renewcommand{\cftfigaftersnum}{\quad}
+\setlength{\cftfigindent}{0pt}
+\setlength{\cftfignumwidth}{2.0cm}
+
+% =========================
+% Reusable layout helpers
+% =========================
+\newcommand{\coverline}[2][8.65cm]{%
+  \makebox[#1][c]{%
+    \ooalign{%
+      \hfil\strut #2\hfil\cr
+      \hidewidth\raisebox{-0.35ex}{\rule{#1}{0.55pt}}\hidewidth\cr
+    }%
+  }%
+}
+
+\newcommand{\coverfield}[2]{%
+  {\sztusong\bfseries\fontsize{14pt}{30pt}\selectfont
+  \makebox[2.55cm][s]{#1}\hspace{0.22cm}\coverline{#2}}%
+}
+
+\newcommand{\scoretable}{%
+  {\sztusong\bfseries\fontsize{10.5pt}{13pt}\selectfont
+  \setlength{\arrayrulewidth}{0.4pt}
+  \renewcommand{\arraystretch}{1}
+  \begin{tabular}{|>{\centering\arraybackslash}m{2.15cm}|>{\centering\arraybackslash}m{2.05cm}|>{\centering\arraybackslash}m{2.15cm}|}
+    \hline
+    得分 & 教师签名 & 批改日期 \\
+    \hline
+    \rule{0pt}{1.95cm} & & \\
+    \hline
+  \end{tabular}}%
+}
+
+\newcommand{\makeoutercover}{%
+  \clearpage
+  \SZTUFramefalse
+  \thispagestyle{plain}%
+  \null
+  \begin{tikzpicture}[remember picture,overlay]
+    \coordinate (NW) at (current page.north west);
+    \node[anchor=west] at ([xshift=3.20cm,yshift=-3.20cm]NW)
+      {{\sztusong\fontsize{14pt}{18pt}\selectfont 课程编号：\coverline[2.35cm]{\CourseCode}}};
+    \node[anchor=north west] at ([xshift=11.45cm,yshift=-2.02cm]NW) {\scoretable};
+    \node[anchor=north] at ([xshift=10.50cm,yshift=-6.42cm]NW)
+      {\includegraphics[width=3.06cm]{assets/sztu-logo.png}};
+    \node[anchor=north] at ([xshift=10.50cm,yshift=-12.80cm]NW)
+      {{\sztusong\bfseries\fontsize{22pt}{28pt}\selectfont
+      \makebox[11.60cm][s]{深圳技术大学课程论文报告}}};
+    \node[anchor=west] at ([xshift=5.10cm,yshift=-15.55cm]NW) {\coverfield{课程名称：}{\CourseName}};
+    \node[anchor=west] at ([xshift=5.10cm,yshift=-16.97cm]NW) {\coverfield{报告名称：}{\ReportTitle}};
+    \node[anchor=west] at ([xshift=5.10cm,yshift=-18.39cm]NW) {\coverfield{班\hspace{1.1em}级：}{\ClassName}};
+    \node[anchor=west] at ([xshift=5.10cm,yshift=-19.81cm]NW) {\coverfield{姓\hspace{1.1em}名：}{\StudentName}};
+    \node[anchor=west] at ([xshift=5.10cm,yshift=-21.23cm]NW) {\coverfield{学\hspace{1.1em}号：}{\StudentID}};
+    \node[anchor=west] at ([xshift=5.10cm,yshift=-22.65cm]NW) {\coverfield{任课教师：}{\TeacherName}};
+    \node[anchor=north] at ([xshift=10.50cm,yshift=-26.05cm]NW)
+      {{\sztusong\bfseries\fontsize{14pt}{18pt}\selectfont \CoverDate}};
+  \end{tikzpicture}
+  \clearpage
+}
+
+\newcommand{\makeinnertitlepage}{%
+  \clearpage
+  \SZTUFrametrue
+  \thispagestyle{plain}%
+  \null
+  \begin{tikzpicture}[remember picture,overlay]
+    \coordinate (NW) at (current page.north west);
+    \node[anchor=center, text width=15.0cm, align=center] at ([xshift=10.50cm,yshift=-9.15cm]NW)
+      {{\sztumsyh\fontsize{26pt}{32pt}\selectfont \ReportTitle}};
+    \node[anchor=north] at ([xshift=10.50cm,yshift=-18.95cm]NW)
+      {{\sztufangsong\fontsize{16pt}{26pt}\selectfont
+      \begin{tabular}{r@{\hspace{0.9cm}}l}
+        作者学校： & \AuthorSchool \\
+        作\hspace{2em}者： & \StudentName
+      \end{tabular}}};
+    \node[anchor=north] at ([xshift=10.50cm,yshift=-24.35cm]NW)
+      {{\sztusong\fontsize{16pt}{22pt}\selectfont \InnerDate}};
+  \end{tikzpicture}
+  \clearpage
+}
+
+\newcommand{\makeabstractpage}{%
+  \clearpage
+  \thispagestyle{plain}%
+  \begin{framedcontent}
+    \vspace*{-0.62cm}
+    \begin{center}
+      {\sztuheiti\fontsize{15pt}{20pt}\selectfont \ReportTitle\par}
+      \vspace{0.85em}
+      {\sztuheiti\fontsize{14pt}{18pt}\selectfont 摘要\par}
+    \end{center}
+    \vspace{0.6em}
+    \noindent\hspace{2em}\parbox{\dimexpr\linewidth-2em\relax}{%
+      \SZTUPreviewOr{\PreviewAbstractText}{\strut\vspace{3\baselineskip}}}
+    \par\vspace{1em}
+    {\sztuheiti\fontsize{14pt}{18pt}\selectfont 关键词：\Keywords}
+  \end{framedcontent}
+  \clearpage
+}
+
+\newcommand{\maketocpage}{%
+  \clearpage
+  \thispagestyle{plain}%
+  \begin{framedcontent}
+    \begingroup
+    \linespread{1}\selectfont
+    \vspace*{-0.38cm}
+    \noindent\makebox[\linewidth][c]{\sztuheiti\fontsize{16pt}{20pt}\selectfont 目录}\par
+    \vspace{0.18cm}
+    \SZTUPrintTocBody
+    \vspace{1.35em}
+    \noindent\makebox[\linewidth][c]{\sztuheiti\fontsize{16pt}{20pt}\selectfont 表目录}\par
+    \vspace{0.28cm}
+    \SZTUPrintLofBody
+    \endgroup
+  \end{framedcontent}
+  \clearpage
+}
+
+\newcommand{\blankfigure}[2][4.2cm]{%
+  \begin{figure}[htbp]
+    \centering
+    \fbox{%
+      \begin{minipage}[c][#1][c]{0.78\linewidth}
+        \centering{\color{gray}\sztusong 图表占位}
+      \end{minipage}%
+    }
+    \caption{#2}
+  \end{figure}
+}
+
+\newcommand{\blankcomparisontable}{%
+  \par\vspace{0.2\baselineskip}
+  \noindent\makebox[\linewidth][c]{%
+  \begin{minipage}{0.95\linewidth}
+    \centering
+    \renewcommand{\arraystretch}{1.45}
+    \setlength{\tabcolsep}{4pt}
+    {\fontsize{10.5pt}{14pt}\selectfont
+    \begin{tabularx}{\linewidth}{|>{\centering\arraybackslash}p{0.14\linewidth}|X|X|X|}
+      \hline
+      评估维度 & 方案一 & 方案二 & 方案三 \\
+      \hline
+      \rule{0pt}{1.1cm} & & & \\
+      \hline
+      \rule{0pt}{1.1cm} & & & \\
+      \hline
+      \rule{0pt}{1.1cm} & & & \\
+      \hline
+    \end{tabularx}}
+    \captionof{figure}{表格标题}
+  \end{minipage}}
+  \par\vspace{0.6\baselineskip}
+}
+
+\newcommand{\makeclosingpage}{%
+  \clearpage
+  \SZTUFrametrue
+  \thispagestyle{plain}%
+  \addcontentsline{toc}{section}{致谢}%
+  \addcontentsline{toc}{section}{参考文献}%
+  \begin{tikzpicture}[remember picture,overlay]
+    \coordinate (NW) at (current page.north west);
+    \draw[line width=0.4pt]
+      ([xshift=3.175cm,yshift=-21.02cm]NW) --
+      ([xshift=-3.175cm,yshift=-21.02cm]current page.north east);
+    \node[anchor=north west] at ([xshift=3.35cm,yshift=-21.08cm]NW)
+      {{\sztusong\fontsize{12pt}{18pt}\selectfont 指导教师批阅意见：}};
+  \end{tikzpicture}%
+  \begin{framedcontent}
+    \vspace*{0.20cm}
+    \begin{center}
+      {\sztuheiti\fontsize{18pt}{24pt}\selectfont 致谢}
+    \end{center}
+    \par\vspace{0.65em}
+    \SZTUPreviewOr{\PreviewAcknowledgementsText}{\vspace*{8\baselineskip}}
+    \par\vspace{1.00cm}
+    \begin{center}
+      {\sztuheiti\fontsize{18pt}{24pt}\selectfont 参考文献}
+    \end{center}
+    \par\vspace{0.25em}
+    \noindent\SZTUPreviewOr{\PreviewReferenceText}{[1]\quad 这里填写参考文献条目。}
+  \end{framedcontent}
+  \clearpage
+}
+
+\newcommand{\makeinstructorpage}{%
+  \clearpage
+  \SZTUFramefalse
+  \thispagestyle{plain}%
+  \null
+  \begin{tikzpicture}[remember picture,overlay]
+    \coordinate (NW) at (current page.north west);
+    \draw[line width=0.4pt]
+      ([xshift=3.175cm,yshift=-2.54cm]NW)
+      rectangle
+      ([xshift=-3.175cm,yshift=-8.65cm]current page.north east);
+    \node[anchor=north west] at ([xshift=3.40cm,yshift=-3.20cm]NW)
+      {{\sztusong\fontsize{12pt}{18pt}\selectfont 成绩评定：}};
+    \node[anchor=west] at ([xshift=11.20cm,yshift=-6.25cm]NW)
+      {{\sztusong\fontsize{12pt}{18pt}\selectfont 指导教师签字：}};
+    \node[anchor=west] at ([xshift=13.05cm,yshift=-7.42cm]NW)
+      {{\sztusong\fontsize{12pt}{18pt}\selectfont 年\hspace{1.2cm}月\hspace{1.2cm}日}};
+    \node[anchor=north west] at ([xshift=3.55cm,yshift=-8.78cm]NW)
+      {{\sztusong\fontsize{12pt}{18pt}\selectfont 注：成绩评定的内容可根据实际情况进行调整。}};
+  \end{tikzpicture}
+  \clearpage
+}
+
+\begin{document}
+
+\makeoutercover
+\makeinnertitlepage
+\makeabstractpage
+\maketocpage
+
+\SZTUFrametrue
+\begin{framedcontent}
+\vspace*{-1.10cm}
+
+\section{\SZTUPreviewOr{\PreviewSectionOne}{一级标题}}
+
+\subsection{\SZTUPreviewOr{\PreviewSubsectionOneOne}{二级标题}}
+\SZTUPreviewOr{这里填写正文。正文样式为宋体 12 pt，1.5 倍行距，首行缩进 2 字符。}{这里填写正文。正文样式为宋体 12 pt，1.5 倍行距，首行缩进 2 字符。}
+\par\vspace{5\baselineskip}
+
+\subsection{\SZTUPreviewOr{\PreviewSubsectionOneTwo}{二级标题}}
+\blankcomparisontable
+
+\section{\SZTUPreviewOr{\PreviewSectionTwo}{一级标题}}
+
+\subsection{\SZTUPreviewOr{\PreviewSubsectionTwoOne}{二级标题}}
+\blankfigure{图表标题}
+
+\subsection{\SZTUPreviewOr{\PreviewSubsectionTwoTwo}{二级标题}}
+\subsubsection{\SZTUPreviewOr{\PreviewSubsubsectionTwoTwoOne}{三级标题}}
+这里填写正文。
+\par\vspace{6\baselineskip}
+
+\subsubsection{\SZTUPreviewOr{\PreviewSubsubsectionTwoTwoTwo}{三级标题}}
+这里填写正文。
+\par\vspace{3\baselineskip}
+
+\subsection{\SZTUPreviewOr{\PreviewSubsectionTwoThree}{二级标题}}
+\subsubsection{\SZTUPreviewOr{\PreviewSubsubsectionTwoThreeOne}{三级标题}}
+这里填写正文。
+
+\subsubsection{\SZTUPreviewOr{\PreviewSubsubsectionTwoThreeTwo}{三级标题}}
+这里填写正文。
+\par\vspace{5\baselineskip}
+
+\section{\SZTUPreviewOr{\PreviewSectionThree}{一级标题}}
+\subsection{\SZTUPreviewOr{\PreviewSubsectionThreeOne}{二级标题}}
+\blankfigure{图表标题}
+
+\subsection{\SZTUPreviewOr{\PreviewSubsectionThreeTwo}{二级标题}}
+\subsection{\SZTUPreviewOr{\PreviewSubsectionThreeThree}{二级标题}}
+\subsection{\SZTUPreviewOr{\PreviewSubsectionThreeFour}{二级标题}}
+\subsection{\SZTUPreviewOr{\PreviewSubsectionThreeFive}{二级标题}}
+
+\section{\SZTUPreviewOr{\PreviewSectionFour}{结论}}
+这里填写结论。
+\par\vspace{6\baselineskip}
+
+\end{framedcontent}
+
+\makeclosingpage
+\makeinstructorpage
+
+\end{document}

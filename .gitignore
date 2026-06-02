@@ -1,0 +1,13 @@
+# Local LaTeX build artifacts
+*.aux
+*.lof
+*.log
+*.out
+*.pdf
+*.synctex.gz
+*.toc
+
+# Local visual QA artifacts may contain source-document information
+_visual_compare/
+SZTU_visual_preview.*
+SZTU_experience_report_preview*
